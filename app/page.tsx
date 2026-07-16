@@ -315,43 +315,46 @@ export default function Home() {
           </div>
           <div className="property-grid">
             {featuredProperties.map((p) => (
-              <article className="property-card" key={p.id}>
-                <div className="property-image">
-                  <img src={propertyImage(p)} alt={p.title} />
-                  <span>{p.property_type}</span>
-                  <Link
-                    href={`/properties/${p.slug}`}
-                    aria-label="View property"
-                    className="button"
-                  >
-                    ↗
-                  </Link>
-                </div>
-                <div className="property-body">
-                  <div>
-                    <h3>{p.title}</h3>
-                    <p className="location">
-                      <MapPin size={15} />
-                      {p.location}
-                    </p>
+              <Link href={`/properties/${p.slug} `} key={p.id}>
+                <article className="property-card">
+                  {" "}
+                  <div className="property-image">
+                    <img src={propertyImage(p)} alt={p.title} />
+                    <span>{p.property_type}</span>
+                    {/* <Link
+                      href={`/properties/${p.slug}`}
+                      aria-label="View property"
+                      className="button"
+                    >
+                      ↗
+                    </Link> */}
                   </div>
-                  <strong>{formatNaira(p.price)}</strong>
-                  <div className="property-specs">
-                    <span>
-                      <BedDouble size={17} />
-                      {p.bedrooms} Beds
-                    </span>
-                    <span>
-                      <Bath size={17} />
-                      {p.bathrooms} Baths
-                    </span>
-                    <span>
-                      <Ruler size={17} />
-                      {p.land_size}
-                    </span>
+                  <div className="property-body">
+                    <div>
+                      <h3>{p.title}</h3>
+                      <p className="location">
+                        <MapPin size={15} />
+                        {p.location}
+                      </p>
+                    </div>
+                    <strong>{formatNaira(p.price)}</strong>
+                    <div className="property-specs">
+                      <span>
+                        <BedDouble size={17} />
+                        {p.bedrooms} Beds
+                      </span>
+                      <span>
+                        <Bath size={17} />
+                        {p.bathrooms} Baths
+                      </span>
+                      <span>
+                        <Ruler size={17} />
+                        {p.land_size}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </Link>
             ))}
           </div>
         </div>

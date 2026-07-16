@@ -12,6 +12,7 @@ export default function PropertiesPage() {
     isPending,
     isError,
   } = useQuery({ queryKey: ["properties"], queryFn: () => getProperties() });
+  console.log("Properties page data:", properties);
   return (
     <>
       <Header />
