@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
@@ -119,6 +120,8 @@ function Logo() {
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [search, setSearch] = useState({ location: "", property_type: "", price: "" });
+  const router = useRouter();
   const { data: featuredProperties = [] } = useQuery({
     queryKey: ["properties", "featured"],
     queryFn: () => getProperties(true),
@@ -129,6 +132,18 @@ export default function Home() {
   });
   const scroll = (id: string) =>
     document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+  const submitSearch = () => {
+    const params = new URLSearchParams();
+    if (search.location) params.set("location", search.location);
+    if (search.property_type) params.set("property_type", search.property_type);
+    if (search.price === "under-100" || search.price.startsWith("Under")) params.set("max_price", "100000000");
+    if (search.price === "100-250" || search.price.includes("-")) {
+      params.set("min_price", "100000000");
+      params.set("max_price", "250000000");
+    }
+    if (search.price === "250-plus") params.set("min_price", "250000000");
+    router.push(`/properties/search${params.size ? `?${params}` : ""}`);
+  };
   return (
     <main>
       <header className="header">
@@ -205,29 +220,30 @@ export default function Home() {
           </div>
           <label>
             LOCATION
-            <select defaultValue="">
-              <option value="" disabled>
+            <select value={search.location} onChange={(event) => setSearch({ ...search, location: event.target.value })}>
+              <option value="">
                 Any location
               </option>
-              <option>Abuja</option>
-              <option>Lagos</option>
+              <option value="Benin">Benin</option>
+              <option value="Lagos">Lagos</option>
+              <option value="Abuja">Abuja</option>
             </select>
           </label>
           <label>
             PROPERTY TYPE
-            <select defaultValue="">
-              <option value="" disabled>
+            <select value={search.property_type} onChange={(event) => setSearch({ ...search, property_type: event.target.value })}>
+              <option value="">
                 Any type
               </option>
-              <option>House</option>
-              <option>Apartment</option>
-              <option>Land</option>
+              <option value="house">House</option>
+              <option value="apartment">Apartment</option>
+              <option value="land">Land</option>
             </select>
           </label>
           <label>
             PRICE RANGE
-            <select defaultValue="">
-              <option value="" disabled>
+            <select value={search.price} onChange={(event) => setSearch({ ...search, price: event.target.value })}>
+              <option value="">
                 Any price
               </option>
               <option>Under ₦100m</option>
@@ -236,7 +252,7 @@ export default function Home() {
           </label>
           <button
             className="search-button"
-            onClick={() => scroll("#properties")}
+            onClick={submitSearch}
           >
             Search <ArrowRight size={18} />
           </button>
