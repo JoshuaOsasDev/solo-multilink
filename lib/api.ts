@@ -30,6 +30,13 @@ export type ContactPayload = {
   message: string;
 };
 export type PropertyInput = Omit<Property, "id" | "images">;
+export type PropertySearch = {
+  title?: string;
+  location?: string;
+  property_type?: string;
+  min_price?: number;
+  max_price?: number;
+};
 export type DashboardStats = {
   total_properties: number;
   featured_properties: number;
@@ -75,6 +82,16 @@ export const getProperties = (featured?: boolean) =>
   );
 export const getProperty = (slug: string) =>
   request<Property>(`/api/properties/${slug}`);
+export const searchProperties = (filters: PropertySearch) => {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") params.set(key, String(value));
+  });
+  const query = params.toString();
+  return request<Property[]>(
+    `/api/properties/search${query ? `?${query}` : ""}`,
+  );
+};
 export const getServices = () => request<Service[]>("/api/services");
 export const sendContact = (payload: ContactPayload) =>
   request("/api/contact", { method: "POST", body: JSON.stringify(payload) });
