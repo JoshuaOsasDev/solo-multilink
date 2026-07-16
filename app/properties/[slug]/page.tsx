@@ -71,20 +71,13 @@ export default function Detail({
             <ArrowLeft size={17} /> Back to listings
           </Link>
           <div className="detail-gallery">
-            <Image
-              width={800}
-              height={600}
-              src={mainImage[0]}
-              alt={property.title}
-            />
+            <img src={mainImage[0]} alt={property.title} />
             <aside>
               {(mainImage.slice(1, 3).length
                 ? mainImage.slice(1, 3)
                 : [mainImage[0], mainImage[0]]
               ).map((image, index) => (
-                <Image
-                  width={800}
-                  height={600}
+                <img
                   key={`${image}-${index}`}
                   src={image}
                   alt={`${property.title} view ${index + 2}`}

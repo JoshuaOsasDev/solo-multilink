@@ -187,9 +187,9 @@
   /* position: relative; */
 }
 .detail-gallery img {
-  object-fit: cover;
   width: 100%;
   height: 300px;
+  object-fit: cover;
   /* position: relative; */
 }
 .detail-gallery aside {
