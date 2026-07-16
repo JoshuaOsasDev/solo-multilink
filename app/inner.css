@@ -184,11 +184,13 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 14px;
+  /* position: relative; */
 }
 .detail-gallery img {
+  object-fit: cover;
   width: 100%;
   height: 300px;
-  object-fit: cover;
+  /* position: relative; */
 }
 .detail-gallery aside {
   display: grid;

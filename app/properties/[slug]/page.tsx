@@ -5,7 +5,13 @@ import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Bath, BedDouble, MapPin, Ruler } from "lucide-react";
 import { Footer, Header } from "../../../components/site";
-import { formatNaira, getProperty, propertyImage } from "../../../lib/api";
+import {
+  formatNaira,
+  getProperty,
+  propertyImage,
+  propertySlugImages,
+} from "../../../lib/api";
+import Image from "next/image";
 
 export default function Detail({
   params,
@@ -54,8 +60,8 @@ export default function Detail({
       ? image.image
       : `http://localhost:8000${image.image}`,
   );
-  const mainImage = propertyImage(property);
-  console.log("Property detail:", mainImage);
+  const mainImage = propertySlugImages(property);
+  console.log("Property detail:", mainImage, property);
   return (
     <>
       <Header />
@@ -65,13 +71,20 @@ export default function Detail({
             <ArrowLeft size={17} /> Back to listings
           </Link>
           <div className="detail-gallery">
-            <img src={mainImage} alt={property.title} />
+            <Image
+              width={800}
+              height={600}
+              src={mainImage[0]}
+              alt={property.title}
+            />
             <aside>
-              {(images.slice(1, 3).length
-                ? images.slice(1, 3)
-                : [mainImage, mainImage]
+              {(mainImage.slice(1, 3).length
+                ? mainImage.slice(1, 3)
+                : [mainImage[0], mainImage[0]]
               ).map((image, index) => (
-                <img
+                <Image
+                  width={800}
+                  height={600}
                   key={`${image}-${index}`}
                   src={image}
                   alt={`${property.title} view ${index + 2}`}
