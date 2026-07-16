@@ -1066,6 +1066,7 @@ footer {
 }
 .admin-check {
   display: flex !important;
+  flex-direction: row !important;
   align-items: center;
   gap: 8px;
   font-size: 12px !important;
@@ -1190,4 +1191,234 @@ footer {
   display: block;
   width: 100%;
   min-height: 450px;
+}
+
+/* ==========================================================================
+   Admin Page Layout & Utilities
+   ========================================================================== */
+
+/* Wide panel for full-width components (e.g., Enquiries / Messages) */
+.admin-panel-wide {
+  grid-column: span 2;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 800px) {
+  .admin-panel-wide {
+    grid-column: span 1;
+  }
+}
+
+/* Base Form Typography & Layout overrides */
+.admin-form label,
+.admin-login label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #033b2e;
+}
+
+/* Button variants inside the admin context */
+.button.gold {
+  background: #b27c00;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.button.gold:hover:not(:disabled) {
+  background: #966900;
+}
+
+.button.gold:disabled {
+  background: #d4c29d;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Enquiries / Messages System
+   ========================================================================== */
+.admin-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Styling for individual messages */
+.admin-message {
+  border-left: 4px solid #b27c00;
+  background: #fdfdfd;
+  border-top: 1px solid #e1e9e5;
+  border-right: 1px solid #e1e9e5;
+  border-bottom: 1px solid #e1e9e5;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-message header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-message header strong {
+  color: #033b2e;
+  font-size: 14px;
+}
+
+.admin-message time {
+  font-size: 11px;
+  color: #71817b;
+}
+
+.admin-message-contact {
+  font-size: 12px;
+  color: #4b5a54;
+  margin: 0;
+  font-weight: 500;
+}
+
+.admin-message p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #2c3531;
+}
+
+/* ==========================================================================
+   List Interactions (Properties / Services Edit and Delete Row)
+   ========================================================================== */
+.admin-row {
+  display: flex;
+  width: 100%;
+  padding: 0; /* Clear default button wrappers padding */
+  overflow: hidden;
+}
+
+.admin-row-main {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-row-main:hover {
+  background: #f8faf9;
+}
+
+.admin-row-main strong {
+  font-size: 14px;
+  color: #033b2e;
+}
+
+.admin-row-main small {
+  display: block;
+}
+
+.admin-row-main b {
+  color: #b27c00;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-left: 8px;
+}
+
+/* Delete button column styling */
+.admin-row-delete {
+  background: #fff0f0;
+  color: #b42318;
+  border: none;
+  border-left: 1px solid #e1e9e5;
+  padding: 0 16px;
+  height: 100%;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.admin-row-delete:hover:not(:disabled) {
+  background: #fecdca;
+  color: #912018;
+}
+
+.admin-row-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Selected File Uploads Previews Panel
+   ========================================================================== */
+.admin-image-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+  padding: 10px;
+  background: #f8faf9;
+  border: 1px solid #e1e9e5;
+}
+
+.admin-image-preview {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #d9e2dd;
+}
+
+.admin-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Remove button overlaid on thumbnail */
+.admin-image-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(180, 35, 24, 0.85);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-image-remove:hover {
+  background: rgba(145, 32, 24, 1);
 }

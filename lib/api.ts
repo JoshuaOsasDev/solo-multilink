@@ -103,6 +103,12 @@ export const updateProperty = (
     `/api/properties/${id}`,
     authenticated(token, { method: "PUT", body: JSON.stringify(property) }),
   );
+
+export const deleteProperty = (token: string, id: number) =>
+  request<Property>(
+    `/api/properties/${id}`,
+    authenticated(token, { method: "DELETE" }),
+  );
 export const uploadPropertyImages = async (
   token: string,
   id: number,

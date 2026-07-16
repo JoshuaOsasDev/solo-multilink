@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BarChart3,
@@ -9,7 +9,9 @@ import {
   LogOut,
   Plus,
   Save,
+  Trash2,
   Wrench,
+  X,
 } from "lucide-react";
 import { Footer } from "../../components/site";
 import {
@@ -18,6 +20,7 @@ import {
   Service,
   createProperty,
   createService,
+  deleteProperty,
   getAdminMessages,
   getAdminProperties,
   getDashboard,
@@ -84,6 +87,19 @@ const toPropertyInput = (property: Property): PropertyInput => ({
   property_type: property.property_type,
 });
 
+// Key used to dedupe files picked across multiple file-input selections.
+const fileKey = (file: File) =>
+  `${file.name}-${file.size}-${file.lastModified}`;
+
+// Turns a title into a URL-safe slug, matching the "[a-z0-9]+(-[a-z0-9]+)*" pattern
+// the slug field validates against.
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 export default function AdminPage() {
   const [token, setToken] = useState<string | null>(() =>
     typeof window === "undefined" ? null : localStorage.getItem("admin_token"),
@@ -99,6 +115,9 @@ export default function AdminPage() {
   const [service, setService] = useState<Service>(emptyService);
   const [serviceId, setServiceId] = useState<number | null>(null);
   const [notice, setNotice] = useState("");
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  // Once the admin edits the slug field directly, stop overwriting it from the title.
+  const [slugTouched, setSlugTouched] = useState(false);
   const client = useQueryClient();
   const dashboard = useQuery({
     queryKey: ["admin", "dashboard"],
@@ -107,10 +126,9 @@ export default function AdminPage() {
   });
   const messages = useQuery({
     queryKey: ["admin", "messages"],
-    queryFn: () => getAdminMessages(token!),
+    queryFn: () => getAdminMessages(token!) as Promise<AdminMessage[]>,
     enabled: !!token,
   });
-  console.log("dashboard", messages.data);
   const properties = useQuery({
     queryKey: ["admin", "properties"],
     queryFn: () => getAdminProperties(token!),
@@ -148,6 +166,22 @@ export default function AdminPage() {
     },
     onError: (error: Error) => setNotice(error.message),
   });
+  const removeProperty = useMutation({
+    mutationFn: (id: number) => deleteProperty(token!, id),
+    onMutate: (id) => setDeletingId(id),
+    onSuccess: (_, id) => {
+      setNotice("Property deleted.");
+      if (propertyId === id) {
+        setProperty(emptyProperty);
+        setPropertyId(null);
+        setFiles([]);
+      }
+      client.invalidateQueries({ queryKey: ["admin"] });
+      client.invalidateQueries({ queryKey: ["properties"] });
+    },
+    onError: (error: Error) => setNotice(error.message),
+    onSettled: () => setDeletingId(null),
+  });
   const saveService = useMutation({
     mutationFn: () =>
       serviceId
@@ -165,6 +199,44 @@ export default function AdminPage() {
     localStorage.removeItem("admin_token");
     setToken(null);
   };
+
+  // Object-URL previews for the currently selected (not-yet-uploaded) photos.
+  const filePreviews = useMemo(
+    () =>
+      files.map((file) => ({
+        key: fileKey(file),
+        file,
+        url: URL.createObjectURL(file),
+      })),
+    [files],
+  );
+  useEffect(() => {
+    return () => {
+      filePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [filePreviews]);
+
+  const addFiles = (incoming: File[]) => {
+    setFiles((prev) => {
+      const existing = new Set(prev.map(fileKey));
+      const additions = incoming.filter((file) => !existing.has(fileKey(file)));
+      return [...prev, ...additions];
+    });
+  };
+  const removeFile = (key: string) => {
+    setFiles((prev) => prev.filter((file) => fileKey(file) !== key));
+  };
+
+  const handleDeleteProperty = (item: Property) => {
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm(`Delete "${item.title}"? This cannot be undone.`)
+    ) {
+      return;
+    }
+    removeProperty.mutate(item.id);
+  };
+
   if (!token)
     return (
       <main className="admin-login">
@@ -241,6 +313,8 @@ export default function AdminPage() {
               onClick={() => {
                 setProperty(emptyProperty);
                 setPropertyId(null);
+                setFiles([]);
+                setSlugTouched(false);
               }}
             >
               <Plus size={17} /> New property
@@ -307,9 +381,14 @@ export default function AdminPage() {
                     <input
                       required
                       value={property.title}
-                      onChange={(e) =>
-                        setProperty({ ...property, title: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const title = e.target.value;
+                        setProperty((prev) => ({
+                          ...prev,
+                          title,
+                          slug: slugTouched ? prev.slug : slugify(title),
+                        }));
+                      }}
                     />
                   </label>
                   <label>
@@ -318,9 +397,10 @@ export default function AdminPage() {
                       required
                       pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
                       value={property.slug}
-                      onChange={(e) =>
-                        setProperty({ ...property, slug: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setSlugTouched(true);
+                        setProperty({ ...property, slug: e.target.value });
+                      }}
                     />
                   </label>
                   <label>
@@ -454,14 +534,35 @@ export default function AdminPage() {
                     type="file"
                     accept="image/*"
                     multiple
-                    onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
+                    onChange={(e) => {
+                      addFiles(Array.from(e.target.files ?? []));
+                      // reset so picking the same file(s) again still fires onChange
+                      e.target.value = "";
+                    }}
                   />
                   <small>
                     {files.length
-                      ? `${files.length} image(s) ready to upload`
-                      : "Optional — you can add one or more images."}
+                      ? `${files.length} image(s) ready to upload — add more or remove below.`
+                      : "Optional — select one or more images. You can add more in a second pass."}
                   </small>
                 </label>
+                {filePreviews.length > 0 && (
+                  <div className="admin-image-previews">
+                    {filePreviews.map((preview) => (
+                      <div key={preview.key} className="admin-image-preview">
+                        <img src={preview.url} alt={preview.file.name} />
+                        <button
+                          type="button"
+                          className="admin-image-remove"
+                          onClick={() => removeFile(preview.key)}
+                          aria-label={`Remove ${preview.file.name}`}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <button
                   className="button gold"
                   disabled={saveProperty.isPending}
@@ -483,23 +584,38 @@ export default function AdminPage() {
               <div className="admin-list">
                 {properties.isPending && <p>Loading properties…</p>}
                 {properties.data?.map((item) => (
-                  <button
-                    key={item.id}
-                    className="admin-row"
-                    onClick={() => {
-                      setProperty(toPropertyInput(item));
-                      setPropertyId(item.id);
-                      setFiles([]);
-                    }}
-                  >
-                    <span>
-                      <strong>{item.title}</strong>
-                      <small>
-                        {item.location} · {item.status}
-                      </small>
-                    </span>
-                    <b>Edit</b>
-                  </button>
+                  <div key={item.id} className="admin-row">
+                    <button
+                      type="button"
+                      className="admin-row-main"
+                      onClick={() => {
+                        setProperty(toPropertyInput(item));
+                        setPropertyId(item.id);
+                        setFiles([]);
+                        setSlugTouched(true);
+                      }}
+                    >
+                      <span>
+                        <strong>{item.title}</strong>
+                        <small>
+                          {item.location} · {item.status}
+                        </small>
+                      </span>
+                      <b>Edit</b>
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-row-delete"
+                      onClick={() => handleDeleteProperty(item)}
+                      disabled={
+                        removeProperty.isPending && deletingId === item.id
+                      }
+                      title={`Delete ${item.title}`}
+                      aria-label={`Delete ${item.title}`}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 ))}
               </div>
             </section>
