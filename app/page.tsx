@@ -605,7 +605,7 @@ export default function Home() {
             <a href="tel:+2347052714130">+234 705 271 4130</a>
             <span className="socials">
               <a
-                href="https://www.facebook.com/solomonmultilinknigltd"
+                href="https://www.facebook.com/share/19CE8JiTtn/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
