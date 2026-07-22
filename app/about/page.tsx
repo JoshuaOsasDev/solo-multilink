@@ -1,6 +1,7 @@
 import { Award, Handshake, ShieldCheck } from "lucide-react";
 import { Footer, Header, PageCta, PageHero } from "../../components/site";
 import { Metadata } from "next";
+import Whatsapp from "../../components/common/whatapp";
 
 export const metadata: Metadata = {
   title: "About Us | Solo Multi-Link",
@@ -103,6 +104,7 @@ export default function AboutPage() {
       </section>
       <PageCta />
       <Footer />
+      <Whatsapp />
     </>
   );
 }

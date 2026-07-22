@@ -34,6 +34,7 @@ import {
   sendContact,
 } from "../lib/api";
 import Image from "next/image";
+import Whatsapp from "../components/common/whatapp";
 
 const properties = [
   {
@@ -120,7 +121,11 @@ function Logo() {
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [search, setSearch] = useState({ location: "", property_type: "", price: "" });
+  const [search, setSearch] = useState({
+    location: "",
+    property_type: "",
+    price: "",
+  });
   const router = useRouter();
   const { data: featuredProperties = [] } = useQuery({
     queryKey: ["properties", "featured"],
@@ -136,7 +141,8 @@ export default function Home() {
     const params = new URLSearchParams();
     if (search.location) params.set("location", search.location);
     if (search.property_type) params.set("property_type", search.property_type);
-    if (search.price === "under-100" || search.price.startsWith("Under")) params.set("max_price", "100000000");
+    if (search.price === "under-100" || search.price.startsWith("Under"))
+      params.set("max_price", "100000000");
     if (search.price === "100-250" || search.price.includes("-")) {
       params.set("min_price", "100000000");
       params.set("max_price", "250000000");
@@ -220,10 +226,13 @@ export default function Home() {
           </div>
           <label>
             LOCATION
-            <select value={search.location} onChange={(event) => setSearch({ ...search, location: event.target.value })}>
-              <option value="">
-                Any location
-              </option>
+            <select
+              value={search.location}
+              onChange={(event) =>
+                setSearch({ ...search, location: event.target.value })
+              }
+            >
+              <option value="">Any location</option>
               <option value="Benin">Benin</option>
               <option value="Lagos">Lagos</option>
               <option value="Abuja">Abuja</option>
@@ -231,10 +240,13 @@ export default function Home() {
           </label>
           <label>
             PROPERTY TYPE
-            <select value={search.property_type} onChange={(event) => setSearch({ ...search, property_type: event.target.value })}>
-              <option value="">
-                Any type
-              </option>
+            <select
+              value={search.property_type}
+              onChange={(event) =>
+                setSearch({ ...search, property_type: event.target.value })
+              }
+            >
+              <option value="">Any type</option>
               <option value="house">House</option>
               <option value="apartment">Apartment</option>
               <option value="land">Land</option>
@@ -242,18 +254,18 @@ export default function Home() {
           </label>
           <label>
             PRICE RANGE
-            <select value={search.price} onChange={(event) => setSearch({ ...search, price: event.target.value })}>
-              <option value="">
-                Any price
-              </option>
+            <select
+              value={search.price}
+              onChange={(event) =>
+                setSearch({ ...search, price: event.target.value })
+              }
+            >
+              <option value="">Any price</option>
               <option>Under ₦100m</option>
               <option>₦100m - ₦250m</option>
             </select>
           </label>
-          <button
-            className="search-button"
-            onClick={submitSearch}
-          >
+          <button className="search-button" onClick={submitSearch}>
             Search <ArrowRight size={18} />
           </button>
         </div>
@@ -592,17 +604,35 @@ export default function Home() {
             <a href="tel:+2347061199435">+234 706 119 9435</a>
             <a href="tel:+2347052714130">+234 705 271 4130</a>
             <span className="socials">
-              <Facebook size={17} />
-              <Instagram size={17} />
+              <a
+                href="https://www.facebook.com/solomonmultilinknigltd"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Facebook size={17} />
+              </a>
+              <a
+                href="https://www.instagram.com/solomonmultilinknigltd"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Instagram size={17} />
+              </a>
+              {/* <Facebook size={17} />
+              <Instagram size={17} /> */}
             </span>
           </div>
         </div>
         <div className="shell footer-bottom">
-          <span>© 2026 Solo Multi-Link. All rights reserved.</span>
+          <span>
+            © {new Date().getFullYear()} Solo Multi-Link. All rights reserved.
+          </span>
           <span>RC 7149846</span>
           <span>Made with purpose</span>
         </div>
       </footer>
+
+      <Whatsapp />
     </main>
   );
 }

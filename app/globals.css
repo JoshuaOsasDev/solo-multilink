@@ -665,6 +665,10 @@ form textarea {
   height: 73px;
   resize: none;
 }
+form textarea::placeholder,
+form input::placeholder {
+  color: #b6c5bd;
+}
 footer {
   background: #062f24;
   color: #d4e1dc;
