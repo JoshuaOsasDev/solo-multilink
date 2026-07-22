@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, MapPin } from "lucide-react";
 import { Footer, Header, PageHero } from "../../components/site";
 import { formatNaira, getProperties, propertyImage } from "../../lib/api";
+import Whatsapp from "../../components/common/whatapp";
 
 export default function PropertiesPage() {
   const {
@@ -73,6 +74,7 @@ export default function PropertiesPage() {
         </div>
       </section>
       <Footer />
+      <Whatsapp />
     </>
   );
 }

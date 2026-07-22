@@ -13,14 +13,14 @@ export function Logo() {
         {" "}
         <Image
           src="/images/solomulti_logo_2.png"
-          alt="Solomon Multi-Link"
+          alt="Solo Multi-Link"
           className="logo-image"
           fill
         />
       </div>
       <i></i>
       <strong>
-        Solomon
+        Solo
         <br />
         <em>Multi-Link</em>
       </strong>
@@ -88,7 +88,7 @@ export function Footer() {
     <footer className="inner-footer">
       <div className="shell footer-content">
         <div>
-          © {new Date().getFullYear()} Solomon Multi-Link. All rights reserved.
+          © {new Date().getFullYear()} Solo Multi-Link. All rights reserved.
         </div>
 
         <div>RC 7149846 · Benin, Nigeria</div>

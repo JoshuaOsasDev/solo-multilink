@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Mail, MapPin, Phone, Send } from "lucide-react";
 import { Footer, Header, PageHero } from "../../components/site";
 import { sendContact } from "../../lib/api";
+import Whatsapp from "../../components/common/whatapp";
 
 export default function ContactPage() {
   const [error, setError] = useState("");
@@ -151,6 +152,7 @@ export default function ContactPage() {
         </div>
       </section>
       <Footer />
+      <Whatsapp />
     </>
   );
 }

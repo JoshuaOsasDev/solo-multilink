@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Building2, Hammer, ShieldCheck } from "lucide-react";
 import { Footer, Header, PageCta, PageHero } from "../../components/site";
 import { getServices } from "../../lib/api";
+import Whatsapp from "../../components/common/whatapp";
 
 export default function ServicesPage() {
   const {
@@ -62,6 +63,7 @@ export default function ServicesPage() {
       </section>
       <PageCta />
       <Footer />
+      <Whatsapp />
     </>
   );
 }

@@ -12,6 +12,7 @@ import {
   propertySlugImages,
 } from "../../lib/api";
 import Image from "next/image";
+import Whatsapp from "../common/whatapp";
 
 export default function Detail({
   params,
@@ -143,6 +144,7 @@ export default function Detail({
         </div>
       </section>
       <Footer />
+      <Whatsapp />
     </>
   );
 }
